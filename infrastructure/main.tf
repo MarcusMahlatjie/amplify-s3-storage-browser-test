@@ -50,11 +50,10 @@ resource "aws_s3_bucket_cors_configuration" "this" {
 }
 
 # ----------------- IAM Policies ------------------------------
-# This policy allows read and write permissions to authenticated users
-# TODO: Update Policies - these are just test policies
+# This policy allows read and write permissions to authenticated users only in the /public directory
 resource "aws_iam_policy" "s3_auth" {
   name        = "${var.bucket_name}-auth-s3"
-  description = "Authenticated user access to public/* and admin/* for ${var.bucket_name}"
+  description = "Authenticated user access to public/* ${var.bucket_name}"
 
   policy = jsonencode({
     Version   = "2012-10-17"
@@ -62,27 +61,24 @@ resource "aws_iam_policy" "s3_auth" {
       {
         Effect = "Allow"
         Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
-        Resource = [
-          "${aws_s3_bucket.loan_optimization_execution.arn}/public/*",
-          "${aws_s3_bucket.loan_optimization_execution.arn}/admin/*"
-        ]
+        Resource = "${aws_s3_bucket.loan_optimization_execution.arn}/public/*"
       },
       {
         Effect   = "Allow"
         Action   = ["s3:ListBucket"]
         Resource = aws_s3_bucket.loan_optimization_execution.arn
         Condition = {
-          StringLike = { "s3:prefix" = ["public/*", "public/", "admin/*", "admin/"] }
+          StringLike = { "s3:prefix" = ["public/*", "public/"] }
         }
       }
     ]
   })
 }
 
-# This policy allows read and write permissions to admins
+# This policy allows read and write permissions to all directories for admins
 resource "aws_iam_policy" "s3_admin" {
   name        = "${var.bucket_name}-admin-s3"
-  description = "Admin group access to admin/* for ${var.bucket_name}"
+  description = "Admin group access to admin/* and public/* for ${var.bucket_name}"
 
   policy = jsonencode({
     Version   = "2012-10-17"
@@ -90,14 +86,18 @@ resource "aws_iam_policy" "s3_admin" {
       {
         Effect   = "Allow"
         Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
-        Resource = "${aws_s3_bucket.loan_optimization_execution.arn}/admin/*"
+        Resource = [
+          "${aws_s3_bucket.loan_optimization_execution.arn}/public/*",
+          "${aws_s3_bucket.loan_optimization_execution.arn}/admin/*"
+        ]
+
       },
       {
         Effect   = "Allow"
         Action   = ["s3:ListBucket"]
         Resource = aws_s3_bucket.loan_optimization_execution.arn
         Condition = {
-          StringLike = { "s3:prefix" = ["admin/*", "admin/"] }
+            StringLike = { "s3:prefix" = ["public/*", "public/", "admin/*", "admin/"] }
         }
       }
     ]

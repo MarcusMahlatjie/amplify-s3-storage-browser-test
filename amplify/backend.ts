@@ -26,10 +26,10 @@ backend.addOutput({
         paths: {
           "public/*": {
             authenticated: ["get", "list", "write", "delete"],
+            groupsadmin: ["get", "list", "write", "delete"],
           },
           "admin/*": {
             groupsadmin: ["get", "list", "write", "delete"],
-            authenticated: ["get", "list", "write", "delete"],
           },
         },
       },
