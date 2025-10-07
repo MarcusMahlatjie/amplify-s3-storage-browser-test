@@ -51,6 +51,7 @@ resource "aws_s3_bucket_cors_configuration" "this" {
 
 # ----------------- IAM Policies ------------------------------
 # This policy allows read and write permissions to authenticated users
+# TODO: Update Policies - these are just test policies
 resource "aws_iam_policy" "s3_auth" {
   name        = "${var.bucket_name}-auth-s3"
   description = "Authenticated user access to public/* and admin/* for ${var.bucket_name}"
