@@ -7,20 +7,19 @@ import { storage } from './storage/resource'
 const backend = defineBackend({
   auth,
   data,
-//   storage
 });
 
-const customBucketName  = "loan-optimization-test"
+const AWS_S3_BUCKET_NAME  = "loan-optimization-execution-bucket"
 
 backend.addOutput({
   version: "1.3",
   storage: {
     aws_region: "eu-west-1",
-    bucket_name: customBucketName,
+    bucket_name: AWS_S3_BUCKET_NAME,
     buckets: [
       {
-        name: customBucketName,
-        bucket_name: customBucketName,
+        name: AWS_S3_BUCKET_NAME,
+        bucket_name: AWS_S3_BUCKET_NAME,
         aws_region: "eu-west-1",
         //@ts-expect-error amplify backend type issue https://github.com/aws-amplify/amplify-backend/issues/2569
         paths: {
@@ -42,90 +41,90 @@ backend.addOutput({
  * Define an inline policy to attach to Amplify's un-auth role
  * This policy defines how unauthenticated users can access your existing bucket
  */
-const unauthPolicy = new Policy(backend.stack, "customBucketUnauthPolicy", {
-  statements: [
-    new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ["s3:GetObject"],
-      resources: [`arn:aws:s3:::${customBucketName}/public/*`],
-    }),
-    new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ["s3:ListBucket"],
-      resources: [`arn:aws:s3:::${customBucketName}`],
-      conditions: {
-        StringLike: {
-          "s3:prefix": ["public/*", "public/"],
-        },
-      },
-    }),
-  ],
-});
-
-/**
- * Define an inline policy to attach to Amplify's auth role
- * This policy defines how authenticated users can access your existing bucket
- */
-const authPolicy = new Policy(backend.stack, "customBucketAuthPolicy", {
-  statements: [
-    new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-      resources: [
-        `arn:aws:s3:::${customBucketName}/public/*`,
-        `arn:aws:s3:::${customBucketName}/admin/*`,
-      ],
-    }),
-    new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ["s3:ListBucket"],
-      resources: [
-        `arn:aws:s3:::${customBucketName}`,
-        `arn:aws:s3:::${customBucketName}/*`,
-      ],
-      conditions: {
-        StringLike: {
-          "s3:prefix": ["public/*", "public/", "admin/*", "admin/"],
-        },
-      },
-    }),
-  ],
-});
-
-/**
- * Define an inline policy to attach to Admin user role
- * This policy defines how authenticated users can access your existing bucket
- */
-const adminPolicy = new Policy(backend.stack, "customBucketAdminPolicy", {
-  statements: [
-    new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-      resources: [`arn:aws:s3:::${customBucketName}/admin/*`],
-    }),
-    new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ["s3:ListBucket"],
-      resources: [
-        `arn:aws:s3:::${customBucketName}`,
-        `arn:aws:s3:::${customBucketName}/*`,
-      ],
-      conditions: {
-        StringLike: {
-          "s3:prefix": ["admin/*", "admin/"],
-        },
-      },
-    }),
-  ],
-});
-
-// Add the policies to the unauthenticated user role
-backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(
-  unauthPolicy
-);
-
-// Add the policies to the authenticated user role
-backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(authPolicy);
-
-// Add the policies to the admin user role
-backend.auth.resources.groups["admin"].role.attachInlinePolicy(adminPolicy);
+// const unauthPolicy = new Policy(backend.stack, "customBucketUnauthPolicy", {
+//   statements: [
+//     new PolicyStatement({
+//       effect: Effect.ALLOW,
+//       actions: ["s3:GetObject"],
+//       resources: [`arn:aws:s3:::${customBucketName}/public/*`],
+//     }),
+//     new PolicyStatement({
+//       effect: Effect.ALLOW,
+//       actions: ["s3:ListBucket"],
+//       resources: [`arn:aws:s3:::${customBucketName}`],
+//       conditions: {
+//         StringLike: {
+//           "s3:prefix": ["public/*", "public/"],
+//         },
+//       },
+//     }),
+//   ],
+// });
+//
+// /**
+//  * Define an inline policy to attach to Amplify's auth role
+//  * This policy defines how authenticated users can access your existing bucket
+//  */
+// const authPolicy = new Policy(backend.stack, "customBucketAuthPolicy", {
+//   statements: [
+//     new PolicyStatement({
+//       effect: Effect.ALLOW,
+//       actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+//       resources: [
+//         `arn:aws:s3:::${customBucketName}/public/*`,
+//         `arn:aws:s3:::${customBucketName}/admin/*`,
+//       ],
+//     }),
+//     new PolicyStatement({
+//       effect: Effect.ALLOW,
+//       actions: ["s3:ListBucket"],
+//       resources: [
+//         `arn:aws:s3:::${customBucketName}`,
+//         `arn:aws:s3:::${customBucketName}/*`,
+//       ],
+//       conditions: {
+//         StringLike: {
+//           "s3:prefix": ["public/*", "public/", "admin/*", "admin/"],
+//         },
+//       },
+//     }),
+//   ],
+// });
+//
+// /**
+//  * Define an inline policy to attach to Admin user role
+//  * This policy defines how authenticated users can access your existing bucket
+//  */
+// const adminPolicy = new Policy(backend.stack, "customBucketAdminPolicy", {
+//   statements: [
+//     new PolicyStatement({
+//       effect: Effect.ALLOW,
+//       actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+//       resources: [`arn:aws:s3:::${customBucketName}/admin/*`],
+//     }),
+//     new PolicyStatement({
+//       effect: Effect.ALLOW,
+//       actions: ["s3:ListBucket"],
+//       resources: [
+//         `arn:aws:s3:::${customBucketName}`,
+//         `arn:aws:s3:::${customBucketName}/*`,
+//       ],
+//       conditions: {
+//         StringLike: {
+//           "s3:prefix": ["admin/*", "admin/"],
+//         },
+//       },
+//     }),
+//   ],
+// });
+//
+// // Add the policies to the unauthenticated user role
+// backend.auth.resources.unauthenticatedUserIamRole.attachInlinePolicy(
+//   unauthPolicy
+// );
+//
+// // Add the policies to the authenticated user role
+// backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(authPolicy);
+//
+// // Add the policies to the admin user role
+// backend.auth.resources.groups["admin"].role.attachInlinePolicy(adminPolicy);
