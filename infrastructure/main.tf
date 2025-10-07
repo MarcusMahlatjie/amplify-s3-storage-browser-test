@@ -50,31 +50,6 @@ resource "aws_s3_bucket_cors_configuration" "this" {
 }
 
 # ----------------- IAM Policies ------------------------------
-# This policy allows read only permissions to un-authenticated users
-resource "aws_iam_policy" "s3_unauth" {
-  name        = "${var.bucket_name}-unauth-s3"
-  description = "Guest access to public/* for ${var.bucket_name}"
-
-  policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = ["s3:GetObject"]
-        Resource = "${aws_s3_bucket.loan_optimization_execution.arn}/public/*"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["s3:ListBucket"]
-        Resource = aws_s3_bucket.loan_optimization_execution.arn
-        Condition = {
-          StringLike = { "s3:prefix" = ["public/*", "public/"] }
-        }
-      }
-    ]
-  })
-}
-
 # This policy allows read and write permissions to authenticated users
 resource "aws_iam_policy" "s3_auth" {
   name        = "${var.bucket_name}-auth-s3"
@@ -126,12 +101,6 @@ resource "aws_iam_policy" "s3_admin" {
       }
     ]
   })
-}
-
-# Attach the policies to the roles created in the cognito user/identity pools
-resource "aws_iam_role_policy_attachment" "unauth_attach" {
-  role       = data.aws_iam_role.unauth.name
-  policy_arn = aws_iam_policy.s3_unauth.arn
 }
 
 resource "aws_iam_role_policy_attachment" "auth_attach" {

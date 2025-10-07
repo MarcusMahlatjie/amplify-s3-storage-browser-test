@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-import "./../app/app.css";
-import { Amplify } from "aws-amplify";
-import {Authenticator } from '@aws-amplify/ui-react';
-import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
+import {Authenticator } from '@aws-amplify/ui-react';
+import type { Schema } from "@/amplify/data/resource";
+import { Amplify } from "aws-amplify";
+import { generateClient } from "aws-amplify/data";
+import { useState, useEffect } from "react";
 import { StorageBrowser } from '../components/StorageBrowser';
+import outputs from "@/amplify_outputs.json";
+import "./../app/app.css";
 
 Amplify.configure(outputs);
 

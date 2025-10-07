@@ -25,8 +25,3 @@ variable "auth_role_name" {
   description = "Authenticated users role name"
   type        = string
 }
-
-variable "unauth_role_name" {
-  description = "Unauthenticated users role name"
-  type        = string
-}
