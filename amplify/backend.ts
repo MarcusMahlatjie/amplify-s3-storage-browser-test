@@ -3,8 +3,8 @@ import { Policy, PolicyStatement, Effect } from "aws-cdk-lib/aws-iam";
 import { auth } from './auth/resource.js';
 import { data } from './data/resource.js';
 
-const aws_s3_bucket_name  = "loan-optimization-execution-bucket"
-const aws_region = "eu-west-1"
+const aws_s3_bucket_name  = "bucket"
+const aws_region = "region"
 
 const backend = defineBackend({
   auth,
